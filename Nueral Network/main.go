@@ -1,13 +1,69 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 func main() {
-	fmt.Println("Testing File")
-	nuNet := createNet(3,[]int{2,2})
-	for i:=range nuNet{
-		for j:=range nuNet[i]{
-			fmt.Println(i,j,">>",nuNet[i][j])
+	rand.Seed(time.Now().UnixNano())
+	tIns := [][]float64{{-1,-1,1,1},{1,1,-1,-1},{-1,1,1,-1},{1,-1,-1,1},{-1,1,-1,1},{1,-1,1,-1}}
+	tOps := [][]float64{{1,0,0},{1,0,0},{0,1,0},{0,1,0},{0,0,1},{0,0,1}}
+
+	// Create a nueral net
+	var myNet = createNet(4, []int{4,3,3})
+	//myNet[1][0].actf = relu
+
+	fmt.Println(">> Before Training")
+	for i := range tIns {
+		thought := myNet.think(tIns[i])
+		fmt.Print("|>>	", thought, "<|>")
+		for j:=range thought{
+			fmt.Print(nearTo(thought[j]),",")
+		}
+		fmt.Println(tOps[i], "	<<|	")
+	}
+	fmt.Print("\n\n")
+
+	fmt.Println(">>Begining Training>>")
+	for x := 0; x < 20000; x++ {
+		for i := range tIns {
+			myNet.backProp(tIns[i], tOps[i])
 		}
 	}
+	fmt.Println()
+	fmt.Println(">> After Training")
+	fmt.Println("\n<|> What are the Answers")
+	for i := range tIns {
+		thought := myNet.think(tIns[i])
+		fmt.Print("|>>	", thought, "<|>")
+		for j:=range thought{
+			fmt.Print(nearTo(thought[j]),",")
+		}
+		fmt.Println(tOps[i], "	<<|	")
+	}
+}
+
+func nearTo(x float64) float64 {
+	if x < 0.5 {
+		return 0
+	}
+	return 1
+}
+
+func calcCost(op []float64, dop []float64) float64 {
+	var z float64
+	for i := range op {
+		z += costFunc(op[i], dop[i])
+	}
+	return z
+}
+
+func costFunc(op float64, dop float64) float64 {
+	return sqr(op - dop)
+}
+
+func costFuncDer(op float64, dop float64) float64 {
+	return (2*op - 2*dop)
 }
