@@ -8,28 +8,30 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	tIns := [][]float64{{-1,-1,1,1},{1,1,-1,-1},{-1,1,1,-1},{1,-1,-1,1},{-1,1,-1,1},{1,-1,1,-1}}
-	tOps := [][]float64{{1,0,0},{1,0,0},{0,1,0},{0,1,0},{0,0,1},{0,0,1}}
-
+	tIns := [][]float64{{1, 0, 0, 1}, {0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 1, 1}}
+	tOps := [][]float64{{1}, {1}, {0}, {0}}
+	testInps := [][]float64{{1, 1, 1, 1}}
 	// Create a nueral net
-	var myNet = createNet(4, []int{4,3,3})
+	var myNet = createNet(4, []int{3, 3, 1})
 	//myNet[1][0].actf = relu
 
 	fmt.Println(">> Before Training")
 	for i := range tIns {
 		thought := myNet.think(tIns[i])
 		fmt.Print("|>>	", thought, "<|>")
-		for j:=range thought{
-			fmt.Print(nearTo(thought[j]),",")
+		for j := range thought {
+			fmt.Print(nearTo(thought[j]), ",")
 		}
 		fmt.Println(tOps[i], "	<<|	")
 	}
 	fmt.Print("\n\n")
 
 	fmt.Println(">>Begining Training>>")
-	for x := 0; x < 20000; x++ {
-		for i := range tIns {
-			myNet.backProp(tIns[i], tOps[i])
+	for x := int64(0); x < 200; x++ {
+		for y := 0; y < 200; y++ {
+			for i := range tIns {
+				myNet.backProp(tIns[i], tOps[i])
+			}
 		}
 	}
 	fmt.Println()
@@ -37,11 +39,20 @@ func main() {
 	fmt.Println("\n<|> What are the Answers")
 	for i := range tIns {
 		thought := myNet.think(tIns[i])
-		fmt.Print("|>>	", thought, "<|>")
-		for j:=range thought{
-			fmt.Print(nearTo(thought[j]),",")
+		fmt.Print("|>>	", thought, "<|>	")
+		for j := range thought {
+			fmt.Print(nearTo(thought[j]), ",")
 		}
 		fmt.Println(tOps[i], "	<<|	")
+	}
+	fmt.Println("\n<|> What are Answers to Test")
+	for i := range testInps {
+		thought := myNet.think(testInps[i])
+		fmt.Print("|>>	", thought, "<|>	")
+		for j := range thought {
+			fmt.Print(nearTo(thought[j]), ",")
+		}
+		fmt.Println("	<<|	")
 	}
 }
 
