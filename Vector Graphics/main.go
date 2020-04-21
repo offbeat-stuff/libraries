@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-var cPts = []vec2{vec2{125, 125}, vec2{375, 125}, {375, 375}, {125, 375}}
+var cPts = []vec2{{125, 125}, {375, 125}, {375, 375}, {125, 375}}
 
 func main() {
 	var wg sync.WaitGroup
@@ -15,12 +15,13 @@ func main() {
 	for x := 0; x < 500; x++ {
 		canv := createImg(500, 500)
 		rect(vec2{}, vec2{500, 500}, canv, color.Black)
-		drawFrame(canv, &wg)
+		circle(vec2{250, 250}, 30, canv, color.RGBA{255, 60, 120, 255})
+		drawFrame(x, canv, &wg)
 	}
 	wg.Wait()
 }
 
-func drawFrame(src *image.RGBA, wg *sync.WaitGroup) {
+func drawFrame(x int, src *image.RGBA, wg *sync.WaitGroup) {
 	var xPts = make([]vec2, 4)
 	for i := range xPts {
 		xPts[i] = cPts[i].add(vec2{100, 0}.rotate((float64(x) / 40) + (float64(i) * 0.5)))

@@ -15,6 +15,27 @@ func line(a, b vec2, src *image.RGBA, clr color.Color) {
 	}
 }
 
+var _samplePoints = [4]vec2{vec2{0.25, 0.25}, vec2{0.75, 0.25}, vec2{0.25, 0.75}, vec2{0.75, 0.75}}
+
+func circle(centr vec2, r float64, src *image.RGBA, clr color.RGBA) {
+	var rSq = sqr(r)
+	for x := -r; x < r; x++ {
+		for y := -r; y < r; y++ {
+			var cClr color.RGBA
+			for _, z := range _samplePoints {
+				cPos := centr.add(vec2{x, y}).add(z)
+				pClr := src.At(int(cPos.x), int(cPos.y)).(color.RGBA)
+				if z.add(vec2{x, y}).magSq() < rSq {
+					cClr = addClr(cClr, multClr(clr, 0.25))
+				} else {
+					cClr = addClr(cClr, multClr(pClr, 0.25))
+				}
+			}
+			src.SetRGBA(int(centr.x+x), int(centr.y+y), cClr)
+		}
+	}
+}
+
 func showCurve(pts []vec2, src *image.RGBA, clr color.Color) {
 	var cPt = pts[0]
 	for i := 0.01; i < 1; i += 0.01 {

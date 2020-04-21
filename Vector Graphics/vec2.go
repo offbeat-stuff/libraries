@@ -57,6 +57,10 @@ func (v vec2) normalize() vec2 {
 	return v.mult(1 / m)
 }
 
+func (v vec2) magSq() float64 {
+	return v.dot(v)
+}
+
 func sqr(x float64) float64 {
 	return x * x
 }
