@@ -1,4 +1,4 @@
-package main
+package vg
 
 import "math"
 
