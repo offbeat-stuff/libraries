@@ -5,13 +5,27 @@ import (
 	"image/color"
 )
 
+//Line to draw lines from a,b vectors defining start and end and width a float64
+func Line(a, b Vec2, width float64, src *image.RGBA, clr color.Color) {
+	// The line
+	var road = b.add(a.neg())
+	//Rotated road
+	var rLn = road.normalize()
+	rLn = Vec2{-rLn.Y, rLn.X}.mult(width / 2)
+	inc := 1 / road.mag()
+	for i := 0.0; i < 1; i += inc {
+		pos := a.add(road.mult(i))
+		line(pos.add(rLn), pos.add(rLn.neg()), src, clr)
+	}
+}
+
 func line(a, b Vec2, src *image.RGBA, clr color.Color) {
 	// The line
 	var road = b.add(a.neg())
 	inc := 1 / road.mag()
 	for i := 0.0; i < 1; i += inc {
 		pos := a.add(road.mult(i))
-		src.Set(int(pos.x), int(pos.y), clr)
+		src.Set(int(pos.X), int(pos.Y), clr)
 	}
 }
 
@@ -25,14 +39,14 @@ func Circle(centr Vec2, r float64, src *image.RGBA, clr color.RGBA) {
 			var cClr color.RGBA
 			for _, z := range samplePoints {
 				cPos := centr.add(Vec2{x, y}).add(z)
-				pClr := src.At(int(cPos.x), int(cPos.y)).(color.RGBA)
+				pClr := src.At(int(cPos.X), int(cPos.Y)).(color.RGBA)
 				if z.add(Vec2{x, y}).magSq() < rSq {
 					cClr = addClr(cClr, multClr(clr, 0.25))
 				} else {
 					cClr = addClr(cClr, multClr(pClr, 0.25))
 				}
 			}
-			src.SetRGBA(int(centr.x+x), int(centr.y+y), cClr)
+			src.SetRGBA(int(centr.X+x), int(centr.Y+y), cClr)
 		}
 	}
 }
@@ -60,8 +74,8 @@ func curveLerp(pts []Vec2, prog float64) Vec2 {
 
 //Rect Func to draw rects
 func Rect(a, b Vec2, src *image.RGBA, clr color.Color) {
-	for i := int(a.x); i < int(b.x); i++ {
-		for j := int(a.y); j < int(b.y); j++ {
+	for i := int(a.X); i < int(b.X); i++ {
+		for j := int(a.Y); j < int(b.Y); j++ {
 			src.Set(i, j, clr)
 		}
 	}
